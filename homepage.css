@@ -1,0 +1,173 @@
+#carousel-inner1{
+    background-image: url("https://static.toiimg.com/photo/64028431.cms");
+    height: 50vh;
+    background-size: cover;
+  }
+  
+  #carousel-inner2{
+    background-image: url("https://s7ap1.scene7.com/is/image/incredibleindia/juhu-beach-mumbai-maharashtra-2-musthead-hero?qlt=82&ts=1727355330454");
+    height: 50vh;
+    background-size: cover;
+  }
+  
+  #carousel-inner3{
+    background-image: url("https://media.assettype.com/freepressjournal/2023-10/f8878d28-43bc-482f-aeed-0a20d835cf79/Untitled_design___2023_10_27T163124_071.jpg?width=1200");
+    height: 50vh;
+    background-size: cover;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #121212;
+    color: #ffffff;
+}
+.navbar {
+    background: #1f1f1f;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+}
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.navbar-nav .nav-link {
+    color: #ffffff;
+    transition: color 0.3s;
+}
+.navbar-nav .nav-link:hover {
+    color: orange;
+}
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+    transition: opacity 1s ease-in-out;
+    opacity: 0;
+    background-blend-mode: overlay;
+}
+.carousel-slide.active {
+    opacity: 1;
+}
+.carousel-indicators {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+}
+.indicator {
+    width: 15px;
+    height: 15px;
+    background: #777;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+.indicator.active, .indicator:hover {
+    background: orange;
+    transform: scale(1.2);
+}
+.container-content {
+    padding: 40px 20px;
+    text-align: center;
+    background: #1f1f1f;
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+.container-content h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: orange;
+}
+
+.main-heading1{
+    padding-top: 20px;
+    font-weight: bold;
+    text-decoration: underline;
+    font-family: "Roboto";
+    font-size: 30px;
+}
+
+
+.main-heading2{
+    font-weight: bold;
+    text-decoration: underline;
+    font-family: "Roboto";
+    font-size: 80px;
+}
+
+.mySlides {
+    width: 100%;
+    display: none;
+}
+
+.demo {
+    width: 100%;
+    cursor: pointer;
+}
+
+.w3-opacity-off {
+    opacity: 1;
+}
+
+.card {
+    height: 100%;
+}
+.card-img-top {
+    height: 200px; /* Fixed height for images */
+    object-fit: cover; /* Ensures the image covers the space without distortion */
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #333; /* Dark background color */
+    color: #fff; /* Light text color */
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-links {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.footer-links li {
+    display: inline;
+    margin: 0 10px;
+}
+
+.footer-links a {
+    color: #fff; /* Light text color for links */
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mumbai Explorer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            display: flex;
+        }
+        
+        nav li {
+            float: left;
+        }
+        
+        nav li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        nav li a:hover {
+            background-color: #555;
+        }
+        
+        nav li a.active {
+            background-color: #4CAF50;
+        }
+        
+        .search-container {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        #search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+        
+        #search-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        #search-button:hover {
+            background-color: #45a049;
+        }
+        
+        #map {
+            height: calc(100vh - 130px);
+            width: 100%;
+        }
+        
+        .legend {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            line-height: 24px;
+        }
+        
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .info {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        
+        .title-container {
+            text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .title-container h1 {
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="/map" class="active">Map</a></li>
+        </ul>
+    </nav>
+    
+    <div class="title-container">
+        <h1>Mumbai Explorer</h1>
+    </div>
+    
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search for a state or region (e.g., Maharashtra, Goa, Tamil Nadu, Navi Mumbai)">
+            <button id="search-button">Search</button>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <script>
+        // Comprehensive data for microplastics pollution levels by area
+        const microplasticsData = {
+            "maharashtra": {
+                center: [19.7515, 75.7139],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Juhu Beach", level: "high", coordinates: [19.0996, 72.8262], radius: 1000 },
+                    { name: "Versova Beach", level: "high", coordinates: [19.1351, 72.8146], radius: 1000 },
+                    { name: "Dadar Beach", level: "high", coordinates: [19.0178, 72.8370], radius: 1000 },
+                    { name: "Aksa Beach", level: "high", coordinates: [19.1768, 72.7995], radius: 1000 },
+                    { name: "Girgaum Chowpatty", level: "high", coordinates: [18.9542, 72.8125], radius: 1000 },
+                    { name: "Mahim Creek", level: "high", coordinates: [19.0401, 72.8384], radius: 1200 },
+                    { name: "Powai Lake", level: "high", coordinates: [19.1308, 72.9098], radius: 1500 },
+                    { name: "Mithi River", level: "high", coordinates: [19.0896, 72.8656], radius: 1800 },
+                    { name: "Thane Creek", level: "high", coordinates: [19.1978, 72.9740], radius: 2000 },
+                    { name: "Ulhas River", level: "high", coordinates: [19.2348, 73.1208], radius: 2000 },
+                    
+                    // Moderate contamination areas (40% - 70%)
+                    { name: "Vasai Beach", level: "medium", coordinates: [19.3919, 72.8056], radius: 1100 },
+                    { name: "Gorai Beach", level: "medium", coordinates: [19.2353, 72.7794], radius: 1000 },
+                    { name: "Arnala Beach", level: "medium", coordinates: [19.4662, 72.7557], radius: 1000 },
+                    { name: "Madh Island Beach", level: "medium", coordinates: [19.1422, 72.7984], radius: 1000 },
+                    { name: "Manori Beach", level: "medium", coordinates: [19.2071, 72.7826], radius: 1000 },
+                    { name: "Elephanta Island", level: "medium", coordinates: [18.9633, 72.9313], radius: 1200 },
+                    { name: "Bandra-Worli Sea Link", level: "medium", coordinates: [19.0274, 72.8151], radius: 1100 },
+                    { name: "Marine Drive", level: "medium", coordinates: [18.9432, 72.8232], radius: 1200 },
+                    { name: "Vashi Creek", level: "medium", coordinates: [19.0759, 72.9978], radius: 1200 },
+                    { name: "Sewri Mudflats", level: "medium", coordinates: [18.9950, 72.8567], radius: 1100 },
+                    
+                    // Low contamination areas (Below 40%)
+                    { name: "Revdanda Beach", level: "low", coordinates: [18.5471, 72.9246], radius: 1000 },
+                    { name: "Alibaug Beach", level: "low", coordinates: [18.6415, 72.8723], radius: 1000 },
+                    { name: "Kihim Beach", level: "low", coordinates: [18.6539, 72.8500], radius: 1000 },
+                    { name: "Murud Beach", level: "low", coordinates: [18.3303, 72.9584], radius: 1000 },
+                    { name: "Jaitapur Coastal Area", level: "low", coordinates: [16.5977, 73.3505], radius: 1200 }
+                ]
+            },
+            "navi mumbai": {
+                center: [19.0330, 73.0297],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Vashi Creek", level: "high", coordinates: [19.0759, 72.9978], radius: 1100 },
+                    { name: "Diva Dumping Ground", level: "high", coordinates: [19.1866, 73.0295], radius: 1200 },
+                    { name: "Ghansoli Creek", level: "high", coordinates: [19.1308, 73.0020], radius: 1000 },
+                    { name: "Belapur Creek", level: "high", coordinates: [19.0217, 73.0370], radius: 1000 },
+                    { name: "Nerul Flamingo Point", level: "high", coordinates: [19.0356, 73.0152], radius: 1000 },
+                    { name: "Taloja Industrial Belt", level: "high", coordinates: [19.0869, 73.1029], radius: 1500 },
+                    { name: "Panvel Creek", level: "high", coordinates: [19.0052, 73.0996], radius: 1300 },
+                    { name: "Kalamboli Drainage", level: "high", coordinates: [19.0455, 73.1240], radius: 1000 },
+                    { name: "Seawoods Lake", level: "high", coordinates: [19.0119, 73.0180], radius: 800 },
+                    { name: "Uran Coastal Belt", level: "high", coordinates: [18.8780, 72.9431], radius: 1400 },
+                    
+                    // Moderate contamination areas (40% - 70%)
+                    { name: "Palm Beach Road Creek", level: "medium", coordinates: [19.0285, 73.0261], radius: 1100 },
+                    { name: "Kharghar Hills Streams", level: "medium", coordinates: [19.0474, 73.0670], radius: 1200 },
+                    { name: "Kharghar Wetlands", level: "medium", coordinates: [19.0392, 73.0718], radius: 1000 },
+                    { name: "Kamothe Reservoirs", level: "medium", coordinates: [19.0075, 73.0977], radius: 900 },
+                    { name: "CBD Belapur Pond", level: "medium", coordinates: [19.0172, 73.0392], radius: 800 },
+                    { name: "Turbhe Mangroves", level: "medium", coordinates: [19.0864, 73.0204], radius: 1000 },
+                    { name: "Digha-Thane Belt", level: "medium", coordinates: [19.1809, 73.0051], radius: 1100 },
+                    
+                    // Low contamination areas (Below 40%)
+                    { name: "Parsik Hill Streams", level: "low", coordinates: [19.1612, 73.0249], radius: 900 },
+                    { name: "Karnala Bird Sanctuary", level: "low", coordinates: [18.9105, 73.1162], radius: 1500 },
+                    { name: "Matheran Hill Streams", level: "low", coordinates: [18.9886, 73.2708], radius: 1400 },
+                    { name: "Kondhane Caves Streams", level: "low", coordinates: [19.1027, 73.2400], radius: 800 },
+                    { name: "Panvel-Palaspe Rivers", level: "low", coordinates: [18.9889, 73.1269], radius: 1100 },
+                    { name: "Chowk Dam", level: "low", coordinates: [18.9533, 73.1694], radius: 1000 }
+                ]
+            },
+            "goa": {
+                center: [15.2993, 74.1240],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Palolem Beach", level: "high", coordinates: [15.0100, 74.0232], radius: 1000 },
+                    { name: "Agonda Beach", level: "high", coordinates: [15.0445, 73.9926], radius: 1000 },
+                    { name: "Colva Beach", level: "high", coordinates: [15.2797, 73.9111], radius: 1100 },
+                    { name: "Baga Beach", level: "high", coordinates: [15.5553, 73.7539], radius: 1200 },
+                    { name: "Anjuna Beach", level: "high", coordinates: [15.5752, 73.7435], radius: 1100 },
+                    { name: "Vagator Beach", level: "high", coordinates: [15.5968, 73.7444], radius: 1000 },
+                    { name: "Candolim Beach", level: "high", coordinates: [15.5187, 73.7633], radius: 1100 },
+                    { name: "Calangute Beach", level: "high", coordinates: [15.5438, 73.7544], radius: 1200 },
+                    { name: "Arambol Beach", level: "high", coordinates: [15.6868, 73.7042], radius: 1100 },
+                    { name: "Morjim Beach", level: "high", coordinates: [15.6304, 73.7323], radius: 1000 },
+                    
+                    // Moderate contamination areas (40% - 70%)
+                    { name: "Dona Paula Beach", level: "medium", coordinates: [15.4520, 73.8037], radius: 900 },
+                    { name: "Miramar Beach", level: "medium", coordinates: [15.4792, 73.8079], radius: 1000 },
+                    { name: "Chapora River Mouth", level: "medium", coordinates: [15.6091, 73.7459], radius: 1100 },
+                    { name: "Zuari River Estuary", level: "medium", coordinates: [15.3973, 73.8983], radius: 1500 },
+                    { name: "Mandovi River Estuary", level: "medium", coordinates: [15.5021, 73.8284], radius: 1500 },
+                    { name: "Salcete Coastline", level: "medium", coordinates: [15.2339, 73.9229], radius: 1800 },
+                    { name: "Mobor Beach", level: "medium", coordinates: [15.1489, 73.9594], radius: 900 },
+                    { name: "Cavelossim Beach", level: "medium", coordinates: [15.1729, 73.9418], radius: 900 },
+                    { name: "Betalbatim Beach", level: "medium", coordinates: [15.3044, 73.9077], radius: 900 },
+                    { name: "Bogmalo Beach", level: "medium", coordinates: [15.3711, 73.8336], radius: 800 },
+                    
+                    // Low contamination areas (Below 40%)
+                    { name: "Varca Beach", level: "low", coordinates: [15.2189, 73.9287], radius: 1000 },
+                    { name: "Galgibaga Beach", level: "low", coordinates: [14.9651, 74.0448], radius: 1000 },
+                    { name: "Talpona Beach", level: "low", coordinates: [14.9897, 74.0341], radius: 900 },
+                    { name: "Sinquerim Beach", level: "low", coordinates: [15.5013, 73.7678], radius: 900 },
+                    { name: "Patnem Beach", level: "low", coordinates: [15.0173, 74.0208], radius: 900 }
+                ]
+            },
+           "mumbai": {
+    "center": [19.0760, 72.8777],
+    "areas": [
+        // High contamination areas (Above 70%)
+        { "name": "Mithi River", "level": "high", "coordinates": [19.0728, 72.8826], "radius": 3000 },
+        { "name": "Powai Lake", "level": "high", "coordinates": [19.1197, 72.9050], "radius": 1500 },
+        { "name": "Dahisar River", "level": "high", "coordinates": [19.2300, 72.8600], "radius": 2000 },
+        { "name": "Vihar Lake", "level": "high", "coordinates": [19.1542, 72.9158], "radius": 1200 },
+        { "name": "Tansa Pipeline Area", "level": "high", "coordinates": [19.3000, 72.9500], "radius": 2500 },
+
+        // Moderate contamination areas (40% - 70%)
+        { "name": "Marine Drive Coastline", "level": "medium", "coordinates": [18.9441, 72.8230], "radius": 2000 },
+        { "name": "Worli Sea Face", "level": "medium", "coordinates": [19.0176, 72.8211], "radius": 1500 },
+        { "name": "Bandra Kurla Complex Wetlands", "level": "medium", "coordinates": [19.0650, 72.8680], "radius": 1800 },
+        { "name": "Thane Creek", "level": "medium", "coordinates": [19.0000, 72.9500], "radius": 3000 },
+        { "name": "Tulsi Lake", "level": "medium", "coordinates": [19.1667, 72.9333], "radius": 1000 },
+        { "name": "Dadar", "level": "medium", "coordinates": [19.0193, 72.8428], "radius": 2000 }, // Added Dadar
+
+        // Low contamination areas (Below 40%)
+        { "name": "Sanjay Gandhi National Park", "level": "low", "coordinates": [19.2143, 72.9107], "radius": 4000 },
+        { "name": "Aarey Colony Forest", "level": "low", "coordinates": [19.1550, 72.8780], "radius": 3000 },
+        { "name": "Malad Creek", "level": "low", "coordinates": [19.1800, 72.8400], "radius": 2000 },
+        { "name": "Gorai Beach", "level": "low", "coordinates": [19.2300, 72.7800], "radius": 1500 },
+        { "name": "Mahim Nature Park", "level": "low", "coordinates": [19.0417, 72.8400], "radius": 1000 }
+    ]
+},
+            "kerala": {
+                center: [10.8505, 76.2711],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Ashtamudi Lake", level: "high", coordinates: [8.9567, 76.5967], radius: 2000 },
+                    { name: "Vembanad Lake", level: "high", coordinates: [9.5700, 76.3700], radius: 3000 },
+                    { name: "Kochi Backwaters", level: "high", coordinates: [9.9339, 76.2540], radius: 2500 },
+                    { name: "Alappuzha Beach", level: "high", coordinates: [9.4981, 76.3388], radius: 1200 },
+                    { name: "Kovalam Beach", level: "high", coordinates: [8.3988, 76.9815], radius: 1000 },
+                    { name: "Cherai Beach", level: "high", coordinates: [10.1384, 76.1799], radius: 1100 }
+                ]
+            },
+            "rajasthan": {
+                center: [27.0238, 74.2179],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Chambal River", level: "high", coordinates: [26.6500, 77.9000], radius: 3000 },
+                    { name: "Banas River", level: "high", coordinates: [26.3700, 75.5800], radius: 2500 },
+                    { name: "Sambhar Salt Lake", level: "high", coordinates: [26.9249, 75.0872], radius: 3000 },
+                    { name: "Pushkar Lake", level: "high", coordinates: [26.4902, 74.5508], radius: 1000 },
+                    { name: "Gadisar Lake", level: "high", coordinates: [26.9124, 70.9119], radius: 1200 },
+                    { name: "Pichola Lake", level: "high", coordinates: [24.5758, 73.6806], radius: 1500 },
+                    { name: "Fateh Sagar Lake", level: "high", coordinates: [24.6057, 73.6735], radius: 1400 },
+                    { name: "Jaisamand Lake", level: "high", coordinates: [24.2530, 73.9662], radius: 2000 },
+                    { name: "Nakki Lake", level: "high", coordinates: [24.5956, 72.7085], radius: 800 },
+                    { name: "Mansagar Lake", level: "high", coordinates: [26.9645, 75.8471], radius: 1200 },
+                    
+                    // Moderate contamination areas (40% - 70%)
+                    { name: "Luni River Basin", level: "medium", coordinates: [25.7500, 72.5000], radius: 3000 },
+                    { name: "Tal Chhapar Wetland", level: "medium", coordinates: [27.7950, 74.4359], radius: 1500 },
+                    { name: "Keoladeo National Park", level: "medium", coordinates: [27.1617, 77.5214], radius: 2000 },
+                    { name: "Kaylana Lake", level: "medium", coordinates: [26.3075, 73.0106], radius: 1200 },
+                    { name: "Badi Lake", level: "medium", coordinates: [24.6300, 73.6800], radius: 1000 },
+                    { name: "Rajsamand Lake", level: "medium", coordinates: [25.0705, 73.8856], radius: 1800 },
+                    { name: "Ana Sagar Lake", level: "medium", coordinates: [26.4700, 74.6163], radius: 1300 },
+                    { name: "Siliserh Lake", level: "medium", coordinates: [27.2878, 76.3405], radius: 1100 },
+                    { name: "Balsamand Lake", level: "medium", coordinates: [26.3295, 73.0239], radius: 1000 },
+                    { name: "Mahi Bajaj Sagar Dam", level: "medium", coordinates: [23.5372, 74.4000], radius: 2000 },
+                    
+                    // Low contamination areas (Below 40%)
+                    { name: "Jawai Bandh Lake", level: "low", coordinates: [25.0992, 73.1613], radius: 1500 },
+                    { name: "Bundi Stepwells", level: "low", coordinates: [25.4372, 75.6438], radius: 1000 },
+                    { name: "Kolayat Lake", level: "low", coordinates: [27.8073, 73.4348], radius: 1100 },
+                    { name: "Gajner Lake", level: "low", coordinates: [27.5523, 73.0321], radius: 1000 },
+                    { name: "Ramgarh Lake", level: "low", coordinates: [27.2522, 75.7957], radius: 1200 },
+                    { name: "Sariska Water Streams", level: "low", coordinates: [27.3122, 76.4375], radius: 1800 },
+                    { name: "Kumbhalgarh Wildlife Sanctuary", level: "low", coordinates: [25.1533, 73.5828], radius: 2000 }
+                ]
+            },
+            "madhya pradesh": {
+                center: [23.4733, 77.9470],
+                areas: [
+                    // High contamination areas (Above 70%)
+                    { name: "Narmada River", level: "high", coordinates: [22.7500, 79.2000], radius: 4000 },
+                    { name: "Shipra River", level: "high", coordinates: [23.1800, 75.7800], radius: 2000 },
+                    { name: "Betwa River", level: "high", coordinates: [24.2500, 78.3000], radius: 3000 },
+                    { name: "Kanha National Park Streams", level: "high", coordinates: [22.3345, 80.6115], radius: 2500 },
+                    { name: "Bhopal Upper Lake", level: "high", coordinates: [23.2599, 77.3341], radius: 2000 },
+                    { name: "Bhopal Lower Lake", level: "high", coordinates: [23.2470, 77.3447], radius: 1500 },
+                    { name: "Indore Kahn River", level: "high", coordinates: [22.7196, 75.8577], radius: 1800 },
+                    { name: "Gwalior Tigra Dam", level: "high", coordinates: [26.1592, 78.1328], radius: 1500 },
+                    { name: "Tawa Reservoir", level: "high", coordinates: [22.5623, 78.0450], radius: 2000 },
+                    { name: "Sanjay Dubri Tiger Reserve", level: "high", coordinates: [23.8500, 81.5333], radius: 2200 },
+                    
+                    // Moderate contamination areas (40% - 70%)
+                    { name: "Pench River", level: "medium", coordinates: [21.9034, 79.3252], radius: 2000 },
+                    { name: "Satpura Lake Systems", level: "medium", coordinates: [22.4723, 78.1443], radius: 2500 },
+                    { name: "Bargi Dam Reservoir", level: "medium", coordinates: [22.9560, 79.9262], radius: 2000 },
+                    { name: "Kolar Dam Reservoir", level: "medium", coordinates: [23.1289, 77.3941], radius: 1500 },
+                    { name: "Halali Dam Reservoir", level: "medium", coordinates: [23.5025, 77.5913], radius: 1300 },
+                    { name: "Dhasan River", level: "medium", coordinates: [24.8700, 79.3900], radius: 2200 },
+                    { name: "Ken River", level: "medium", coordinates: [24.5200, 80.0000], radius: 2500 },
+                    { name: "Chambal River (MP)", level: "medium", coordinates: [26.1900, 77.2300], radius: 3000 },
+                    { name: "Son River", level: "medium", coordinates: [24.0000, 82.0000], radius: 3500 },
+                    { name: "Singrauli Reservoirs", level: "medium", coordinates: [24.2026, 82.6694], radius: 2500 },
+                    
+                    // Low contamination areas (Below 40%)
+                    { name: "Madhav National Park", level: "low", coordinates: [25.5169, 77.7383], radius: 2000 },
+                    { name: "Orchha Betwa Riverbanks", level: "low", coordinates: [25.3500, 78.6400], radius: 1200 },
+                    { name: "Mandu Water Reservoirs", level: "low", coordinates: [22.3680, 75.4000], radius: 1500 },
+                    { name: "Handia Riverbanks", level: "low", coordinates: [22.5053, 76.9943], radius: 1300 },
+                    { name: "Choral Dam Reservoir", level: "low", coordinates: [22.5400, 75.9300], radius: 1400 },
+                    { name: "Rural MP Stepwells", level: "low", coordinates: [23.5000, 76.5000], radius: 3000 },
+                    { name: "Patalpani Falls", level: "low", coordinates: [22.5476, 75.8886], radius: 1000 }
+                ]
+            }
+        };
+       // Initialize map centered on India
+       const map = L.map('map').setView([20.5937, 78.9629], 5);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Define circle colors based on pollution level
+        const getLevelColor = (level) => {
+            switch(level) {
+                case 'high': return '#ff0000'; // Red
+                case 'medium': return '#ff9900'; // Orange
+                case 'low': return '#33cc33'; // Green
+                default: return '#3388ff'; // Default blue
+            }
+        };
+        
+        // Add info control
+        const info = L.control();
+        
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        
+        info.update = function (props) {
+            this._div.innerHTML = '<h4>Microplastics Pollution</h4>' + (props ?
+                '<b>' + props.name + '</b><br />Pollution Level: ' + props.level.toUpperCase() :
+                'Hover over an area');
+        };
+        
+        info.addTo(map);
+        
+        // Add legend
+        const legend = L.control({position: 'bottomright'});
+        
+        legend.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'legend');
+            const levels = ['high', 'medium', 'low'];
+            const labels = ['High', 'Moderate', 'Low'];
+            
+            div.innerHTML = '<h4>Pollution Levels</h4>';
+            
+            for (let i = 0; i < levels.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getLevelColor(levels[i]) + '"></i> ' +
+                    labels[i] + '<br>';
+            }
+            
+            return div;
+        };
+        
+        legend.addTo(map);
+        
+        // Function to display the search results for a specific area or state
+function displaySearchResults(searchTerm) {
+    // Clear existing markers
+    map.eachLayer(function (layer) {
+        if (layer instanceof L.Circle) {
+            map.removeLayer(layer);
+        }
+    });
+
+    const normalizedSearch = searchTerm.toLowerCase().trim();
+    let found = false;
+
+    // Check if the search term matches a state
+    if (microplasticsData[normalizedSearch]) {
+        found = true;
+        const cityData = microplasticsData[normalizedSearch];
+
+        // Center the map on the state
+        map.setView(cityData.center, 8);
+
+        // Add circles for all areas in the state
+        cityData.areas.forEach(area => {
+            const circle = L.circle(area.coordinates, {
+                color: getLevelColor(area.level),
+                fillColor: getLevelColor(area.level),
+                fillOpacity: 0.5,
+                radius: area.radius
+            }).addTo(map);
+
+            // Add popup and mouseover events
+            circle.bindPopup(`<b>${area.name}</b><br>Pollution Level: ${area.level.toUpperCase()}`);
+
+            circle.on('mouseover', function (e) {
+                this.openPopup();
+                info.update({ name: area.name, level: area.level });
+            });
+
+            circle.on('mouseout', function (e) {
+                this.closePopup();
+                info.update();
+            });
+        });
+    } else {
+        // Search for the area in all cities/states
+        for (const city in microplasticsData) {
+            const cityData = microplasticsData[city];
+            const matchingArea = cityData.areas.find(area =>
+                area.name.toLowerCase() === normalizedSearch
+            );
+
+            if (matchingArea) {
+                found = true;
+                // Center the map on the matching area
+                map.setView(matchingArea.coordinates, 13);
+
+                // Add a circle for the matching area
+                const circle = L.circle(matchingArea.coordinates, {
+                    color: getLevelColor(matchingArea.level),
+                    fillColor: getLevelColor(matchingArea.level),
+                    fillOpacity: 0.5,
+                    radius: matchingArea.radius
+                }).addTo(map);
+
+                // Add popup and mouseover events
+                circle.bindPopup(`<b>${matchingArea.name}</b><br>Pollution Level: ${matchingArea.level.toUpperCase()}`);
+
+                circle.on('mouseover', function (e) {
+                    this.openPopup();
+                    info.update({ name: matchingArea.name, level: matchingArea.level });
+                });
+
+                circle.on('mouseout', function (e) {
+                    this.closePopup();
+                    info.update();
+                });
+
+                break; // Exit the loop once the area is found
+            }
+        }
+    }
+
+    if (!found) {
+        alert(`No data available for "${searchTerm}". Try searching for a state or specific area.`);
+    }
+}
+        
+        // Search button event listener
+        document.getElementById('search-button').addEventListener('click', function() {
+            const searchTerm = document.getElementById('search-input').value;
+            if (searchTerm) {
+                displaySearchResults(searchTerm);
+            }
+        });
+        
+        // Enter key event listener for search input
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = document.getElementById('search-input').value;
+                if (searchTerm) {
+                    displaySearchResults(searchTerm);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festivals in Mumbai</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/d75c51e7b9.js" crossorigin="anonymous"></script>
+
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Festival Section */
+        .festival-section {
+            padding: 80px 0;
+        }
+
+        .festival-section h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .festival-section p {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 60px;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #1a1a1a;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(255, 255, 255, 0.1);
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            color: #ff6f61;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        /* Gradient Button */
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6f61, #ff4a3d);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(255, 111, 97, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Festival Section -->
+<section class="festival-section">
+    <div class="container">
+        <h2>Festivals in Mumbai</h2>
+        <p>Experience the vibrant festivals celebrated in Mumbai, showcasing the city's rich culture and traditions.</p>
+        
+        <div class="row">
+
+            <!-- Card 1: Ganesh Chaturthi -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="data:image/jpeg;base64,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" alt="Ganesh Chaturthi">
+                    <div class="card-body">
+                        <h5 class="card-title">Ganesh Chaturthi</h5>
+                        <p class="card-subtitle">Celebrated in August/September</p>
+                        <p class="card-text">A grand festival celebrating the birth of Lord Ganesha, marked by vibrant processions and elaborate decorations.</p>
+                      
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Diwali -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="https://offloadmedia.feverup.com/secretmumbai.com/wp-content/uploads/2024/10/14202440/pexels-ravi-roshan-2875998-5877926-1.jpg" alt="Diwali">
+                    <div class="card-body">
+                        <h5 class="card-title">Diwali</h5>
+                        <p class="card-subtitle">Celebrated in October/November</p>
+                        <p class="card-text">The festival of lights, symbolizing the victory of light over darkness, celebrated with fireworks and family gatherings.</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Holi -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="https://th.bing.com/th/id/OIF.9zEOYPDQnhPeZXhWtfAi5Q?rs=1&pid=ImgDetMain" alt="Holi">
+                    <div class="card-body">
+                        <h5 class="card-title">Holi</h5>
+                        <p class="card-subtitle">Celebrated in March</p>
+                        <p class="card-text">The festival of colors, where people throw colored powders and water at each other, celebrating love and joy.</p>
+                      
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Eid -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="https://th.bing.com/th/id/OIP.zt-cW6aGPaww0TWRWKPs5wHaF-?w=233&h=187&c=7&r=0&o=5&dpr=1.3&pid=1.7 alt="Eid">
+                    <div class="card-body">
+                        <h5 class="card-title">Eid</h5>
+                        <p class="card-subtitle">Celebrated in August/September</p>
+                        <p class="card-text">A significant Islamic festival marked by prayers, feasting, and community gatherings, celebrating the end of Ramadan.</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Navratri -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFmUAW9KE39wQ9Lz7jlL3anoJoVxSlEoTycw&s" alt="Navratri">
+                    <div class="card-body">
+                        <h5 class="card-title">Navratri</h5>
+                        <p class="card-subtitle">Celebrated in September/October</p>
+                        <p class="card-text">A nine-night festival dedicated to the worship of the goddess Durga, celebrated with dance and music.</p>
+                      
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Christmas -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card">
+                    <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Christmas_celebration_in_Mumbai.jpg/800px-Christmas_celebration_in_Mumbai.jpg" alt="Christmas">
+                    <div class="card-body">
+                        <h5 class="card-title">Christmas</h5>
+                        <p class="card-subtitle">Celebrated on December 25</p>
+                        <p class="card-text">A festive celebration of the birth of Jesus Christ, marked by decorations, carols, and family gatherings.</p>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script src="https://d1tgh8fmlzexmh.cloudfront.net/ccbp-static-website/js/ccbp-ui-kit.js"></script>
+</body>
+</html>
